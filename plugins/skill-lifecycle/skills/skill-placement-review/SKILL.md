@@ -21,6 +21,33 @@ clone at `~/github/claude-plugins` — clone it there if it isn't present yet
 marketplace edits in a throwaway scratch directory, since that work needs
 to survive past the current session.
 
+## Step 0 — Check for existing reuse first
+
+Before writing a new skill's content — not just after, when deciding where
+it lives — check whether an existing skill from a trusted source already
+covers the need, in whole or in part:
+
+- List the plugins/skills already installed from known marketplaces (the
+  personal `xdoubleu/xdoubleu-claude-plugins` marketplace and the official
+  `claude-plugins-official` marketplace) and skim their descriptions for
+  overlap with what's being built.
+- **Full overlap** — an existing skill already does this: use/invoke it
+  instead of writing a new one. Don't create a duplicate just because it
+  wasn't top of mind.
+- **Partial overlap** — an existing skill covers part of the need: prefer
+  composing (the new skill invokes the existing one for that part) over
+  re-implementing it. This is the same delegation pattern already used
+  throughout these plugins and their consumers — e.g. `tools.xdoubleu.com`'s
+  `start-task` invokes `task-worktree` + `refine-issue` rather than
+  reimplementing worktree or issue-creation mechanics.
+- **No overlap**: write the new skill for the part with no existing
+  coverage, then continue to Step 1 to decide where it belongs.
+
+"Trusted source" means a marketplace already known to the user (already in
+`extraKnownMarketplaces`, or the official `claude-plugins-official`
+marketplace) — not an arbitrary skill found on the web with no way to
+verify its provenance or quality.
+
 ## Step 1 — Decide: project-specific, or marketplace-worthy?
 
 Ask of the new/edited skill:
