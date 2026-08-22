@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/git-cleanup.sh\" 2>/dev/null || true",
+            "timeout": 30,
+            "statusMessage": "Cleaning up merged worktrees/branches..."
+          }
+        ]
+      }
+    ]
+  }
+}

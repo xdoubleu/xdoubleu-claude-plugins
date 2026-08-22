@@ -1,0 +1,7 @@
+{
+  "name": "session-hygiene",
+  "description": "Status line (model/effort/context%/rate limits/worktree badge) and the compact-idle hygiene hooks: a sound + systemMessage nudge to /compact when idle with high context usage, and a hard block on new prompts past a context threshold until you do.",
+  "author": {
+    "name": "xdoubleu"
+  }
+}

@@ -2,6 +2,6 @@
   "name": "github-issue-triage",
   "description": "Config-driven GitHub issue refinement and bulk triage: summaries, labels, priority, project-board status, duplicate merging, and splitting oversized issues into sub-issues.",
   "author": {
-    "name": "Xander Warszawski"
+    "name": "xdoubleu"
   }
 }

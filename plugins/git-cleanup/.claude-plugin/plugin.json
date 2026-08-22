@@ -1,7 +1,7 @@
 {
   "name": "git-cleanup",
-  "description": "Remove local git worktrees and branches for PRs already merged (including squash merges).",
+  "description": "Automatically removes local git worktrees and branches for PRs already merged (including squash merges) at the start of every session, plus an on-demand skill for the same cleanup.",
   "author": {
-    "name": "Xander Warszawski"
+    "name": "xdoubleu"
   }
 }

@@ -1,0 +1,7 @@
+{
+  "name": "skill-lifecycle",
+  "description": "After a skill is created or substantially edited in any project, decides whether it should stay project-specific or move to/update the xdoubleu/claude-plugins marketplace, and keeps project wrapper skills honest about what they delegate.",
+  "author": {
+    "name": "xdoubleu"
+  }
+}

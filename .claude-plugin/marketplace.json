@@ -1,9 +1,9 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "claude-plugins",
-  "description": "Xander Warszawski's personal Claude Code plugins: generic skills for the fresh-worktree/ship-PR task flow, session retrospectives, git cleanup, and GitHub issue triage.",
+  "description": "xdoubleu's personal Claude Code plugins: generic skills for the fresh-worktree/ship-PR task flow, session retrospectives, git cleanup, GitHub issue triage, skill placement, and session hygiene (status line + compact-idle hooks).",
   "owner": {
-    "name": "Xander Warszawski"
+    "name": "xdoubleu"
   },
   "plugins": [
     {
@@ -20,7 +20,7 @@
     },
     {
       "name": "git-cleanup",
-      "description": "Remove local git worktrees and branches for PRs already merged (including squash merges).",
+      "description": "Automatically removes local git worktrees and branches for PRs already merged (including squash merges) at the start of every session, plus an on-demand skill for the same cleanup.",
       "source": "./plugins/git-cleanup",
       "category": "workflow"
     },
@@ -28,6 +28,18 @@
       "name": "github-issue-triage",
       "description": "Config-driven GitHub issue refinement and bulk triage: summaries, labels, priority, project-board status, duplicate merging, and splitting oversized issues into sub-issues.",
       "source": "./plugins/github-issue-triage",
+      "category": "workflow"
+    },
+    {
+      "name": "skill-lifecycle",
+      "description": "After a skill is created or substantially edited in any project, decides whether it should stay project-specific or move to/update this marketplace, and keeps project wrapper skills honest about what they delegate.",
+      "source": "./plugins/skill-lifecycle",
+      "category": "workflow"
+    },
+    {
+      "name": "session-hygiene",
+      "description": "Status line (model/effort/context%/rate limits/worktree badge) and the compact-idle hygiene hooks: a sound + systemMessage nudge to /compact when idle with high context usage, and a hard block on new prompts past a context threshold until you do.",
+      "source": "./plugins/session-hygiene",
       "category": "workflow"
     }
   ]
