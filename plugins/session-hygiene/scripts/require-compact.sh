@@ -30,12 +30,22 @@ CACHE_TTL_NORMAL=3600
 input=$(cat)
 
 USER_INPUT=$(echo "$input" | jq -r '.user_input // empty')
+SESSION_ID=$(echo "$input" | jq -r '.session_id // empty')
 
 case "$USER_INPUT" in
-  "/compact"*|"/clear"*) exit 0 ;;
+  "/compact"*|"/clear"*)
+    # The cached % is about to go stale (compaction/clear is about to drop
+    # usage), and there's no guarantee the statusline re-renders with the
+    # updated number before the user's very next prompt. Without this,
+    # that next prompt gets blocked on a pre-compaction reading even though
+    # the thing the block was demanding just happened. Deleting the cache
+    # here just falls back to "allow" until the statusline repopulates it
+    # with a real post-compaction number.
+    [ -n "$SESSION_ID" ] && rm -f "$HOME/.claude/cache/context_pct/$SESSION_ID"
+    exit 0
+    ;;
 esac
 
-SESSION_ID=$(echo "$input" | jq -r '.session_id // empty')
 [ -n "$SESSION_ID" ] || exit 0
 
 CACHE_FILE="$HOME/.claude/cache/context_pct/$SESSION_ID"
