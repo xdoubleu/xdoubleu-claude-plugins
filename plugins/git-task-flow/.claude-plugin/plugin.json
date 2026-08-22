@@ -1,0 +1,7 @@
+{
+  "name": "git-task-flow",
+  "description": "Generic fresh-worktree-off-main setup and rebase/push/PR/auto-merge/CI-watch shipping flow for any git+GitHub repo.",
+  "author": {
+    "name": "Xander Warszawski"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "git-cleanup",
+  "description": "Remove local git worktrees and branches for PRs already merged (including squash merges).",
+  "author": {
+    "name": "Xander Warszawski"
+  }
+}

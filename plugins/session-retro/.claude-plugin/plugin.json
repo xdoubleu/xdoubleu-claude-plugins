@@ -1,0 +1,7 @@
+{
+  "name": "session-retro",
+  "description": "Analyze the current session's own tool calls and CI runs for concrete inefficiencies, and ship the smallest fix as its own issue/PR when something real turns up.",
+  "author": {
+    "name": "Xander Warszawski"
+  }
+}

@@ -1,0 +1,102 @@
+---
+name: refine-issue
+description: Create or refine a single GitHub issue — summary, type/scope labels, priority, and project-board status — and keep a "## Plan" section in its body in sync. Use when starting work that has no tracking issue yet, when a plan-mode plan needs to be recorded on an issue, or when development begins and an issue's status should move to "in progress".
+---
+
+# Refine Issue
+
+Single-issue version of the refinement `issue-triage` does in bulk: give one
+issue a summary, the right labels, a priority, and a status on the project
+board (if one is configured). Also owns keeping a `## Plan` section on the
+issue in sync with plan mode, and moving status to "in progress" once
+development actually starts.
+
+`issue-triage` reuses the config/labels/priority-rule below rather than
+redefining them — keep the two in sync if any of this changes.
+
+## Config
+
+This skill is config-driven so it works across repos without editing the
+skill itself. Look for `.claude/github-triage.config.json` at the target
+repo's root:
+
+```json
+{
+  "repo": "owner/name",
+  "project": { "owner": "owner-login", "number": 8 },
+  "labels": {
+    "types": ["bug", "enhancement", "feature", "chore", "documentation"],
+    "scopes": ["area-a", "area-b"],
+    "fallbackScope": "platform"
+  },
+  "priorityRule": "P0 = fixes/restores something already working today that's now broken. P1 = improves existing, working functionality. P2 = brand-new features that don't exist yet. A shiny new feature never outranks a broken thing.",
+  "markerLabel": "triaged"
+}
+```
+
+- `project` is optional — omit it entirely if this repo has no project
+  board, and skip every project-board step below.
+- `labels.types`/`labels.scopes` should list labels that **already exist**
+  in the repo — don't invent new ones; run `gh label list --repo <repo>` if
+  unsure what's actually there.
+- `priorityRule` is free text describing this repo's own P0/P1/P2 (or
+  equivalent) ordering — apply it verbatim over any other instinct. When an
+  issue is ambiguous, ask which bucket it means rather than guessing.
+
+**If the config file doesn't exist yet**: ask the user for `repo` (default
+to the current repo), whether there's a project board (and if so its
+owner/number — `gh project list --owner <owner>` to find it), the label
+lists (`gh label list --repo <repo>` to see what's available), and the
+priority rule they want. Write the answers to
+`.claude/github-triage.config.json` so future runs (in this repo, by this
+skill or `issue-triage`) don't need to ask again.
+
+If `project` is set, look up its `Status` and `Priority` (or equivalently
+named) single-select fields' current field/option ids each run with `gh
+project field-list <number> --owner <owner> --format json` — don't
+hardcode ids in the config file, since they aren't worth tracking there and
+can drift.
+
+## Steps — create or refine an issue
+
+1. If no tracking issue exists yet for the work: `gh issue create --repo <repo> --title <title> --body <body>`.
+2. Write/update the body with a one-line summary up top, original text preserved below a divider:
+   ```
+   gh issue edit <num> --repo <repo> --body "$(printf '**Summary:** %s\n\n---\n\n%s' "$SUMMARY" "$ORIGINAL_BODY")"
+   ```
+3. Apply the type label, scope label, and the marker label in one call:
+   `gh issue edit <num> --repo <repo> --add-label "bug,area-a,triaged"`.
+4. If a project board is configured and the issue isn't on it yet, add it and capture the item id:
+   `gh project item-add <number> --owner <owner> --url <issue-url> --format json --jq .id`
+5. If a project board is configured, set its priority and status fields using the field/option ids looked up in Config. A reasonable default status mapping on creation: highest-severity priorities → a "ready to pick up" status, lowest priority (new feature) → a backlog-style status — adapt to whatever this repo's own status options actually are.
+   ```
+   gh project item-edit --project-id <PVT_id> --id <item-id> --field-id <field-id> --single-select-option-id <opt-id>
+   ```
+
+## Steps — record a plan
+
+Once a plan-mode plan exists for the issue's work, insert or replace a
+`## Plan` section in the issue body — placed after the Summary line, before
+the original-body divider. If a `## Plan` section already exists from a
+prior session, replace it rather than appending a duplicate:
+```
+gh issue edit <num> --repo <repo> --body "$(printf '**Summary:** %s\n\n## Plan\n\n%s\n\n---\n\n%s' "$SUMMARY" "$PLAN" "$ORIGINAL_BODY")"
+```
+
+## Steps — move to in progress
+
+When development actually starts (first code edit or commit on the branch,
+not just issue creation) and a project board is configured, set its status
+field to an "in progress" equivalent via the same `gh project item-edit`
+pattern as above.
+
+## Notes
+
+- If the project board, its number, or its field names ever change,
+  re-derive them from `gh project list --owner <owner>` / `gh project
+  field-list <n> --owner <owner>` rather than trusting anything cached from
+  a previous run — don't cache field/option ids in the config file itself.
+- This skill doesn't know anything about a specific issue-tracker integration
+  beyond GitHub's own Issues/Projects — if a repo also wants to resolve
+  entries in an external error tracker (Sentry, etc.) once a fix ships, that
+  belongs in a repo-specific wrapper skill, not here.

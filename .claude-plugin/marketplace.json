@@ -1,0 +1,34 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-plugins",
+  "description": "Xander Warszawski's personal Claude Code plugins: generic skills for the fresh-worktree/ship-PR task flow, session retrospectives, git cleanup, and GitHub issue triage.",
+  "owner": {
+    "name": "Xander Warszawski"
+  },
+  "plugins": [
+    {
+      "name": "git-task-flow",
+      "description": "Generic fresh-worktree-off-main setup and rebase/push/PR/auto-merge/CI-watch shipping flow for any git+GitHub repo.",
+      "source": "./plugins/git-task-flow",
+      "category": "workflow"
+    },
+    {
+      "name": "session-retro",
+      "description": "Analyze the current session's own tool calls and CI runs for concrete inefficiencies, and ship the smallest fix as its own issue/PR when something real turns up.",
+      "source": "./plugins/session-retro",
+      "category": "workflow"
+    },
+    {
+      "name": "git-cleanup",
+      "description": "Remove local git worktrees and branches for PRs already merged (including squash merges).",
+      "source": "./plugins/git-cleanup",
+      "category": "workflow"
+    },
+    {
+      "name": "github-issue-triage",
+      "description": "Config-driven GitHub issue refinement and bulk triage: summaries, labels, priority, project-board status, duplicate merging, and splitting oversized issues into sub-issues.",
+      "source": "./plugins/github-issue-triage",
+      "category": "workflow"
+    }
+  ]
+}
