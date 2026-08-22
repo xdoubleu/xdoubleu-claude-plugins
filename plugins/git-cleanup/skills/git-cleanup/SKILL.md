@@ -23,7 +23,7 @@ sh "${CLAUDE_PLUGIN_ROOT}/scripts/git-cleanup.sh"
 
 If `${CLAUDE_PLUGIN_ROOT}` isn't set in this context, locate
 `git-cleanup.sh` under this plugin's installed directory (typically
-`~/.claude/plugins/marketplaces/claude-plugins/plugins/git-cleanup/scripts/git-cleanup.sh`)
+`~/.claude/plugins/marketplaces/xdoubleu-claude-plugins/plugins/git-cleanup/scripts/git-cleanup.sh`)
 and run it directly instead.
 
 ## Notes

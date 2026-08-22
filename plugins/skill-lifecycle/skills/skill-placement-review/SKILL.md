@@ -1,6 +1,6 @@
 ---
 name: skill-placement-review
-description: Run after creating a new Claude Code skill, or substantially editing an existing one, in ANY project. Decides whether the skill belongs only in that project's .claude/skills/, should move to (or update) the xdoubleu/claude-plugins marketplace, or is a project-specific wrapper around an existing marketplace plugin that needs to stay in sync with it. Use whenever the user asks "should this be a skill", "add a skill", "should this go in the marketplace", or right after any SKILL.md is written or edited.
+description: Run after creating a new Claude Code skill, or substantially editing an existing one, in ANY project. Decides whether the skill belongs only in that project's .claude/skills/, should move to (or update) the xdoubleu/xdoubleu-claude-plugins marketplace, or is a project-specific wrapper around an existing marketplace plugin that needs to stay in sync with it. Use whenever the user asks "should this be a skill", "add a skill", "should this go in the marketplace", or right after any SKILL.md is written or edited.
 ---
 
 # Skill Placement Review
@@ -10,14 +10,14 @@ A skill's *content* isn't the only thing worth getting right — where it
 secretly generic just drifts and gets copy-pasted, and a marketplace plugin
 that's secretly project-specific breaks the moment someone else installs
 it. Run this review every time a skill is created or meaningfully edited,
-anywhere — not just in `xdoubleu/claude-plugins` itself.
+anywhere — not just in `xdoubleu/xdoubleu-claude-plugins` itself.
 
 ## The marketplace
 
-`xdoubleu/claude-plugins` (public GitHub repo) is the one place generic,
+`xdoubleu/xdoubleu-claude-plugins` (public GitHub repo) is the one place generic,
 cross-project Claude Code skills/hooks live. Maintain a persistent local
 clone at `~/github/claude-plugins` — clone it there if it isn't present yet
-(`gh repo clone xdoubleu/claude-plugins ~/github/claude-plugins`); don't do
+(`gh repo clone xdoubleu/xdoubleu-claude-plugins ~/github/claude-plugins`); don't do
 marketplace edits in a throwaway scratch directory, since that work needs
 to survive past the current session.
 
@@ -105,6 +105,6 @@ drift both directions:
 - A skill can legitimately stay project-specific forever — most should.
   Don't force genericization on something that only makes sense for one
   project; a bad abstraction is worse than a duplicated skill.
-- `xdoubleu/claude-plugins` is a personal marketplace, not a public-facing
+- `xdoubleu/xdoubleu-claude-plugins` is a personal marketplace, not a public-facing
   product — there's no obligation to keep every plugin polished for
   strangers, just correct and current for the projects that consume it.

@@ -1,4 +1,4 @@
-# claude-plugins
+# xdoubleu-claude-plugins
 
 xdoubleu's personal Claude Code plugin marketplace: generic skills/hooks
 that aren't tied to any one project, so they can be installed once and
@@ -8,13 +8,13 @@ project's own `.claude/skills/`.
 ## Install
 
 ```
-/plugin marketplace add xdoubleu/claude-plugins
-/plugin install git-task-flow@claude-plugins
-/plugin install session-retro@claude-plugins
-/plugin install git-cleanup@claude-plugins
-/plugin install github-issue-triage@claude-plugins
-/plugin install skill-lifecycle@claude-plugins
-/plugin install session-hygiene@claude-plugins
+/plugin marketplace add xdoubleu/xdoubleu-claude-plugins
+/plugin install git-task-flow@xdoubleu-claude-plugins
+/plugin install session-retro@xdoubleu-claude-plugins
+/plugin install git-cleanup@xdoubleu-claude-plugins
+/plugin install github-issue-triage@xdoubleu-claude-plugins
+/plugin install skill-lifecycle@xdoubleu-claude-plugins
+/plugin install session-hygiene@xdoubleu-claude-plugins
 ```
 
 Maintain a persistent local clone at `~/github/claude-plugins` for editing

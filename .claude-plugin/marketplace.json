@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "claude-plugins",
+  "name": "xdoubleu-claude-plugins",
   "description": "xdoubleu's personal Claude Code plugins: generic skills for the fresh-worktree/ship-PR task flow, session retrospectives, git cleanup, GitHub issue triage, skill placement, and session hygiene (status line + compact-idle hooks).",
   "owner": {
     "name": "xdoubleu"
