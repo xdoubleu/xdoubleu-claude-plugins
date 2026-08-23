@@ -100,14 +100,14 @@ for follows from step 2:
 # mode=mergeable → no auto-merge; wait for a conflict-free PR, then hand off
 mode=merged
 while :; do
-  read -r state mergeable status <<<"$(gh pr view \
+  read -r state mergeable mergestate <<<"$(gh pr view \
     --json state,mergeable,mergeStateStatus \
     --jq '"\(.state) \(.mergeable) \(.mergeStateStatus)"' 2>/dev/null)" || true
-  echo "state=$state mergeable=$mergeable mergeStateStatus=$status"
+  echo "state=$state mergeable=$mergeable mergeStateStatus=$mergestate"
   case "$state" in
     MERGED|CLOSED) break ;;
   esac
-  if [ "$status" = DIRTY ]; then
+  if [ "$mergestate" = DIRTY ]; then
     break                       # merge conflicts — needs you, not more waiting
   fi
   case "$mergeable" in
@@ -120,7 +120,9 @@ done
 
 Poll no faster than 20s — this is a remote API with rate limits — and let a
 failed `gh` call fall through to the next iteration rather than killing the
-loop; one flaky request is not an outcome.
+loop; one flaky request is not an outcome.  Keep the variable named `mergestate` rather
+than the obvious `status`: `status` is read-only in zsh, and the loop aborts on
+its first line in any shell that happens to be one.
 
 This second wait cannot be replaced by a single `gh pr view`, and the poll in it
 is not an oversight: GitHub delivers state changes by webhook, which needs a
