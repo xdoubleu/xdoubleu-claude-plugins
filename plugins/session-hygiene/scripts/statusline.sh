@@ -44,7 +44,12 @@ fi
 
 CTX=""
 if [ -n "$CTX_PCT" ]; then
-  CTX="ctx: $(printf '%.0f' "$CTX_PCT")% of $((CTX_SIZE / 1000))k"
+  if [ "$CTX_SIZE" -ge 1000000 ]; then
+    CTX_SIZE_STR="$((CTX_SIZE / 1000000))M"
+  else
+    CTX_SIZE_STR="$((CTX_SIZE / 1000))k"
+  fi
+  CTX="ctx: $(printf '%.0f' "$CTX_PCT")% of $CTX_SIZE_STR"
 fi
 
 LINE="${BADGE}[$MODEL${EFFORT:+/$EFFORT}]"
