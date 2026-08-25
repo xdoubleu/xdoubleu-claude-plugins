@@ -70,12 +70,69 @@ the actual criteria (size thresholds, which file patterns count as
 
 ## 3. Monitor CI until green, fixing it yourself if it isn't
 
+Wait using `gh`'s own watch and a loop that **exits on the outcome** — never a
+foreground sleep-then-recheck cycle, which burns a turn per iteration and
+tells you nothing the exit status wouldn't have.
+
+Run both waits below in the background (Bash `run_in_background`): each ends by
+itself once the result is decided, so you get one completion notification and
+spend no turns waiting.
+
+**a. Wait for the checks.** `--watch` polls inside the `gh` process
+(`--interval`, 10s by default), so there is no loop to hand-roll:
+
 ```bash
-gh pr checks --watch
-gh pr view --json mergeable,mergeStateStatus,statusCheckRollup
+gh pr checks --watch --fail-fast --required
 ```
 
-A red PR or non-mergeable state is not "done" — diagnose the actual failure
+`--fail-fast` returns on the first failure instead of sitting through the
+remaining checks; `--required` ignores checks that don't gate the merge. Exit
+status is the result: `0` all passed, `8` still pending, anything else means a
+check failed.
+
+**b. Wait for the PR's terminal state.** Green checks are not the end state —
+with auto-merge armed the merge itself lands seconds to minutes later, and
+mergeability is reported separately from check status. Which condition you wait
+for follows from step 2:
+
+```bash
+# mode=merged    → auto-merge was armed in step 2; wait for the merge to land
+# mode=mergeable → no auto-merge; wait for a conflict-free PR, then hand off
+mode=merged
+while :; do
+  read -r state mergeable mergestate <<<"$(gh pr view \
+    --json state,mergeable,mergeStateStatus \
+    --jq '"\(.state) \(.mergeable) \(.mergeStateStatus)"' 2>/dev/null)" || true
+  echo "state=$state mergeable=$mergeable mergeStateStatus=$mergestate"
+  case "$state" in
+    MERGED|CLOSED) break ;;
+  esac
+  if [ "$mergestate" = DIRTY ]; then
+    break                       # merge conflicts — needs you, not more waiting
+  fi
+  case "$mergeable" in
+    MERGEABLE|CONFLICTING)      # UNKNOWN means still computing; keep polling
+      if [ "$mode" = mergeable ]; then break; fi ;;
+  esac
+  sleep 20
+done
+```
+
+Poll no faster than 20s — this is a remote API with rate limits — and let a
+failed `gh` call fall through to the next iteration rather than killing the
+loop; one flaky request is not an outcome.  Keep the variable named `mergestate` rather
+than the obvious `status`: `status` is read-only in zsh, and the loop aborts on
+its first line in any shell that happens to be one.
+
+This second wait cannot be replaced by a single `gh pr view`, and the poll in it
+is not an oversight: GitHub delivers state changes by webhook, which needs a
+public endpoint a local CLI doesn't have; `mergeable` is computed lazily, so the
+first query after a push legitimately returns `UNKNOWN` and merely *triggers*
+the computation; and there is no `gh pr view --watch` to block on. `gh pr
+checks --watch` is a poll too — the win is that its loop, and this one, run
+somewhere you aren't spending turns.
+
+A red PR or a non-mergeable state is not "done" — diagnose the actual failure
 (don't just re-run blindly) and repeat from step 1. Once green + mergeable,
 report the PR URL. Auto-merge was already armed in step 2 for small
 self-contained changes; otherwise, stop here and wait for review.
