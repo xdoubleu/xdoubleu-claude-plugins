@@ -34,6 +34,11 @@ from there, don't redefine them here; if that file doesn't exist yet, run
    - Type and scope label per the label lists in `refine-issue`'s config
    - Priority per the rule in `refine-issue`'s config
    - Whether it actually bundles 2+ separable pieces of work — if so, list candidate subtask titles. Only propose a split when the pieces would plausibly ship as separate PRs. If the pieces touch the same file(s)/component and would naturally get fixed together in one pass, they're multiple small fixes to the same code area, not separate work — keep them as one issue. When unsure, prefer keeping it as one issue.
+   - Is the issue's description missing any part of the change's blast
+     radius (other interfaces/consumers built on top of the same
+     functionality, UI implications, etc.)? If so, note it in the rewritten
+     summary/body rather than silently refining an incomplete issue —
+     bulk triage shouldn't block on asking the user, just flag it.
 
 3. **Execute directly, highest priority first** — no need to show the plan and wait first; the general behavior (auto-comment-and-close dupes, rewrite descriptions, relabel, reprioritize) is pre-approved. Report what was done afterward (step 6) rather than proposing it beforehand.
 

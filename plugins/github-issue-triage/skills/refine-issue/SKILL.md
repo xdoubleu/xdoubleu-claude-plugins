@@ -73,6 +73,23 @@ can drift.
    gh project item-edit --project-id <PVT_id> --id <item-id> --field-id <field-id> --single-select-option-id <opt-id>
    ```
 
+6. **Sanity-check the issue is actually refined, not just labeled.** Before
+   considering an issue ready to work (and again before moving it to "in
+   progress" below), read it critically:
+   - Is there anything ambiguous or missing that would make you guess
+     instead of ask? If so, ask the user rather than proceeding.
+   - Does the issue's description reflect the **full blast radius** of the
+     change, not just the most visible part? Check the actual codebase for
+     other consumers of whatever is being changed — other interfaces that
+     wrap or expose the same functionality (APIs, generated/served
+     interfaces, admin or read-only tooling built on top of it, UI/consumers
+     of it) — and if the issue is silent on one of them, add it to the body
+     (or ask the user what the intended behavior there should be, e.g. what
+     a UI change should look like) before treating the issue as ready.
+
+   This isn't a one-time gate — re-run it whenever the issue's scope
+   changes materially (a new `## Plan` section, a reopened issue, etc).
+
 ## Steps — record a plan
 
 Once a plan-mode plan exists for the issue's work, insert or replace a
@@ -86,9 +103,10 @@ gh issue edit <num> --repo <repo> --body "$(printf '**Summary:** %s\n\n## Plan\n
 ## Steps — move to in progress
 
 When development actually starts (first code edit or commit on the branch,
-not just issue creation) and a project board is configured, set its status
-field to an "in progress" equivalent via the same `gh project item-edit`
-pattern as above.
+not just issue creation), re-run the refined-enough/blast-radius check
+above before treating the issue as good to go. If a project board is
+configured, set its status field to an "in progress" equivalent via the
+same `gh project item-edit` pattern as above.
 
 ## Notes
 
