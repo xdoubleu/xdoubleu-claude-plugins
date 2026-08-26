@@ -88,9 +88,9 @@ reporting statuses. Wrap the watch in a small retry so that specific message
 doesn't get mistaken for "no checks are required on this PR":
 
 ```bash
-until out=$(gh pr checks --watch --fail-fast --required 2>&1); do
+until out=$(gh pr checks --watch --fail-fast 2>&1); do
   code=$?
-  if [ "$code" = 1 ] && grep -q "no required checks reported" <<<"$out"; then
+  if [ "$code" = 1 ] && grep -q "no checks reported" <<<"$out"; then
     sleep 10
     continue
   fi
@@ -101,9 +101,17 @@ echo "$out"
 ```
 
 `--fail-fast` returns on the first failure instead of sitting through the
-remaining checks; `--required` ignores checks that don't gate the merge. Exit
-status is the result: `0` all passed, `8` still pending, anything else means a
-check failed.
+remaining checks. Exit status is the result: `0` all passed, `8` still
+pending, anything else means a check failed.
+
+Don't add `--required`: `gh pr checks` only recognizes required checks
+declared via classic branch protection, not a repository ruleset's
+`required_status_checks` rule (`gh api repos/<owner>/<repo>/rules/branches/<default>`
+shows which one a repo uses). On a ruleset-protected repo `--required` fails
+immediately with `no required checks reported on the '<branch>' branch`,
+every single time, regardless of whether checks are actually running — a
+plain `--fail-fast` wait still exits on any real failure without needing
+required-check detection at all.
 
 **b. Wait for the PR's terminal state.** Green checks are not the end state —
 with auto-merge armed the merge itself lands seconds to minutes later, and
