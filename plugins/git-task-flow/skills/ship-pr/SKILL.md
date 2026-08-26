@@ -82,13 +82,21 @@ spend no turns waiting.
 (`--interval`, 10s by default), so there is no loop to hand-roll:
 
 ```bash
-gh pr checks --watch --fail-fast --required
+gh pr checks --watch --fail-fast
 ```
 
 `--fail-fast` returns on the first failure instead of sitting through the
-remaining checks; `--required` ignores checks that don't gate the merge. Exit
-status is the result: `0` all passed, `8` still pending, anything else means a
-check failed.
+remaining checks. Exit status is the result: `0` all passed, `8` still
+pending, anything else means a check failed.
+
+Don't add `--required`: `gh pr checks` only recognizes required checks
+declared via classic branch protection, not a repository ruleset's
+`required_status_checks` rule (`gh api repos/<owner>/<repo>/rules/branches/<default>`
+shows which one a repo uses). On a ruleset-protected repo `--required` fails
+immediately with `no required checks reported on the '<branch>' branch`,
+every single time, regardless of whether checks are actually running — a
+plain `--fail-fast` wait still exits on any real failure without needing
+required-check detection at all.
 
 **b. Wait for the PR's terminal state.** Green checks are not the end state —
 with auto-merge armed the merge itself lands seconds to minutes later, and
