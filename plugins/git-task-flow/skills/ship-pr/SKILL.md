@@ -79,10 +79,25 @@ itself once the result is decided, so you get one completion notification and
 spend no turns waiting.
 
 **a. Wait for the checks.** `--watch` polls inside the `gh` process
-(`--interval`, 10s by default), so there is no loop to hand-roll:
+(`--interval`, 10s by default), so there is no loop to hand-roll — except for
+one startup wrinkle: run immediately after PR creation, `gh pr checks
+--required` can exit 1 with `no required checks reported` before GitHub has
+registered any check runs on the branch yet — a transient gap, not a real
+failure, since the workflow triggers off the push and hasn't started
+reporting statuses. Wrap the watch in a small retry so that specific message
+doesn't get mistaken for "no checks are required on this PR":
 
 ```bash
-gh pr checks --watch --fail-fast --required
+until out=$(gh pr checks --watch --fail-fast --required 2>&1); do
+  code=$?
+  if [ "$code" = 1 ] && grep -q "no required checks reported" <<<"$out"; then
+    sleep 10
+    continue
+  fi
+  echo "$out"
+  exit "$code"
+done
+echo "$out"
 ```
 
 `--fail-fast` returns on the first failure instead of sitting through the
