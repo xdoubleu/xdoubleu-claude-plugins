@@ -96,11 +96,21 @@ codebase, not other sessions) for these patterns:
      in a fix — or trusting one already documented — actually run it once
      rather than assuming a command mentioned in the docs still works.
 
+8. **Fetching/preprocessing that should've been delegated to a subagent**
+   - This session made a large or noisy tool-call sequence directly in the
+     main context — a broad grep sweep, an unfiltered log pull, several
+     chained MCP calls, a multi-file exploration — whose raw output was
+     mostly discarded after extracting one fact. A subagent could have done
+     the same digging and returned only the distilled result, keeping the
+     raw output out of the main context entirely.
+   - A file or MCP response was read in full into the main context when only
+     a summary or a specific field was actually used downstream.
+
 ## Steps
 
 1. **Scan this session's own history** — the tool calls actually made, the
    commits on this branch, and (if a PR was opened) its CI check history —
-   against the seven categories above.
+   against the eight categories above.
 2. **Decide if anything is concrete enough to act on.** A single minor
    inefficiency with no clear fix isn't worth an issue. A repeated pattern,
    a CI failure with an obvious local check that would've caught it, or a
