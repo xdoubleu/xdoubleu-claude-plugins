@@ -1,6 +1,6 @@
 ---
 name: refine-issue
-description: Create or refine a single GitHub issue — summary, type/scope labels, priority, and project-board status — and keep a "## Plan" section in its body in sync. Use when starting work that has no tracking issue yet, when a plan-mode plan needs to be recorded on an issue, or when development begins and an issue's status should move to "in progress".
+description: Create or refine a single GitHub issue — summary, type/scope labels, priority, and project-board status — and keep a "## Plan" section in its body in sync — and confirm the scope with the user before any code is written. Use when starting work that has no tracking issue yet, when a plan-mode plan needs to be recorded on an issue, or when development begins and an issue's status should move to "in progress".
 ---
 
 # Refine Issue
@@ -89,6 +89,8 @@ can drift.
 
    This isn't a one-time gate — re-run it whenever the issue's scope
    changes materially (a new `## Plan` section, a reopened issue, etc).
+   Whatever it turns up feeds the scope confirmation below, which is what
+   actually puts it in front of the user.
 
 ## Steps — record a plan
 
@@ -100,11 +102,36 @@ prior session, replace it rather than appending a duplicate:
 gh issue edit <num> --repo <repo> --body "$(printf '**Summary:** %s\n\n## Plan\n\n%s\n\n---\n\n%s' "$SUMMARY" "$PLAN" "$ORIGINAL_BODY")"
 ```
 
+## Steps — confirm the scope before work starts
+
+Before the first code edit, post the intended scope back to the user and
+**wait for a go-ahead**. This is a required round-trip, not a judgement
+call — do it even when the issue looks unambiguous to you, and even when
+the user's request sounded specific. "It seemed clear" is exactly the
+state that produces a correction later.
+
+State, briefly (a few lines, not a document):
+
+- what will change, and what will **not** — the boundary is the part
+  people actually correct
+- the approach, whenever more than one reasonable one exists
+- the blast radius surfaced by the check above, including any consumer
+  you intend to leave alone
+- anything you are assuming rather than know
+
+Do not begin editing until the user replies. If they correct the scope,
+update the issue body (and its `## Plan`, if present) to match **before**
+starting, so the issue stays the record of what was actually agreed.
+
+The only case that skips this: the user's own message already spelled the
+scope out at this level of detail, leaving nothing to confirm.
+
 ## Steps — move to in progress
 
 When development actually starts (first code edit or commit on the branch,
 not just issue creation), re-run the refined-enough/blast-radius check
-above before treating the issue as good to go. If a project board is
+above, and confirm the scope with the user as described above, before
+treating the issue as good to go. If a project board is
 configured, set its status field to an "in progress" equivalent via the
 same `gh project item-edit` pattern as above.
 
