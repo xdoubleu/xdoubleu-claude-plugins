@@ -76,7 +76,14 @@ can drift.
 6. **Sanity-check the issue is actually refined, not just labeled.** Before
    considering an issue ready to work (and again before moving it to "in
    progress" below), read it critically:
-   - Is there anything ambiguous or missing that would make you guess
+   - **Is the body empty?** An issue with a title and nothing else is never
+     self-explanatory — a title states a topic, not a scope, and the
+     readings it permits usually differ enough to produce materially
+     different work. Stop and ask the user what they want before planning,
+     exploring further, or editing anything, then write their answer into
+     the body so the next session doesn't have to ask again. This is not a
+     judgement call and applies however obvious the title looks.
+   - Is there anything else ambiguous or missing that would make you guess
      instead of ask? If so, ask the user rather than proceeding.
    - Does the issue's description reflect the **full blast radius** of the
      change, not just the most visible part? Check the actual codebase for
