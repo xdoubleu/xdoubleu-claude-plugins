@@ -1,6 +1,6 @@
 ---
 name: refine-issue
-description: Create or refine a single GitHub issue — summary, type/scope labels, priority, and project-board status — and keep a "## Plan" section in its body in sync — and confirm the scope with the user before any code is written. Use when starting work that has no tracking issue yet, when a plan-mode plan needs to be recorded on an issue, or when development begins and an issue's status should move to "in progress".
+description: Create or refine a single GitHub issue — summary, type/scope labels, priority, and project-board status — and keep a "## Plan" section in its body in sync — and grill the user about the scope, round by round, before any code is written. Use when starting work that has no tracking issue yet, when a plan-mode plan needs to be recorded on an issue, or when development begins and an issue's status should move to "in progress".
 ---
 
 # Refine Issue
@@ -96,8 +96,8 @@ can drift.
 
    This isn't a one-time gate — re-run it whenever the issue's scope
    changes materially (a new `## Plan` section, a reopened issue, etc).
-   Whatever it turns up feeds the scope confirmation below, which is what
-   actually puts it in front of the user.
+   Whatever it turns up feeds the grilling below, which is what actually
+   puts it in front of the user.
 
 ## Steps — record a plan
 
@@ -109,15 +109,27 @@ prior session, replace it rather than appending a duplicate:
 gh issue edit <num> --repo <repo> --body "$(printf '**Summary:** %s\n\n## Plan\n\n%s\n\n---\n\n%s' "$SUMMARY" "$PLAN" "$ORIGINAL_BODY")"
 ```
 
-## Steps — confirm the scope before work starts
+## Steps — grill the scope before work starts
 
-Before the first code edit, post the intended scope back to the user and
-**wait for a go-ahead**. This is a required round-trip, not a judgement
-call — do it even when the issue looks unambiguous to you, and even when
-the user's request sounded specific. "It seemed clear" is exactly the
-state that produces a correction later.
+Before the first code edit, **grill the user** about the scope until you
+reach a shared understanding — don't settle for a single one-shot "here's
+what I'll do, ok?" message. This is a required round-trip, not a judgement
+call: do it even when the issue looks unambiguous to you, and even when the
+user's request sounded specific. "It seemed clear" is exactly the state
+that produces a correction later.
 
-State, briefly (a few lines, not a document):
+If a `grilling` skill is available, use it. Otherwise run its method by
+hand: map the work as a **design tree** where every decision branches into
+the decisions that hang off it, and work the tree in **rounds**. Each round,
+ask the whole *frontier* — every decision whose prerequisites are already
+settled — as a numbered list, each question with your recommended answer,
+then wait for the user's answers before the next round. Their answers push
+the frontier outward and unblock the next round. Find facts yourself
+(codebase, tools, subagents); only the *decisions* go to the user. You are
+done when the frontier is empty — every branch visited, nothing silently
+assumed.
+
+Across the rounds, make sure these are explicitly settled, not guessed:
 
 - what will change, and what will **not** — the boundary is the part
   people actually correct
@@ -126,18 +138,20 @@ State, briefly (a few lines, not a document):
   you intend to leave alone
 - anything you are assuming rather than know
 
-Do not begin editing until the user replies. If they correct the scope,
-update the issue body (and its `## Plan`, if present) to match **before**
-starting, so the issue stays the record of what was actually agreed.
+Do not begin editing until the frontier is empty and the user confirms the
+shared understanding. As answers come in, update the issue body (and its
+`## Plan`, if present) to match, so the issue stays the record of what was
+actually agreed.
 
-The only case that skips this: the user's own message already spelled the
-scope out at this level of detail, leaving nothing to confirm.
+This is unconditional — there is no "the issue looks trivial" or "the user's
+message already spelled it out" escape hatch; a settled frontier just makes
+for a short single round.
 
 ## Steps — move to in progress
 
 When development actually starts (first code edit or commit on the branch,
 not just issue creation), re-run the refined-enough/blast-radius check
-above, and confirm the scope with the user as described above, before
+above, and grill the scope with the user as described above, before
 treating the issue as good to go. If a project board is
 configured, set its status field to an "in progress" equivalent via the
 same `gh project item-edit` pattern as above.

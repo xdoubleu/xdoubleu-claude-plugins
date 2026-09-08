@@ -39,6 +39,10 @@ from there, don't redefine them here; if that file doesn't exist yet, run
      functionality, UI implications, etc.)? If so, note it in the rewritten
      summary/body rather than silently refining an incomplete issue —
      bulk triage shouldn't block on asking the user, just flag it.
+   - Is the issue genuinely ambiguous about *what work it authorizes* —
+     empty body, two readings that produce materially different PRs? Collect
+     these; you'll grill the user on them together in step 5 rather than
+     guessing or refining them into something they didn't ask for.
 
 3. **Execute directly, highest priority first** — no need to show the plan and wait first; the general behavior (auto-comment-and-close dupes, rewrite descriptions, relabel, reprioritize) is pre-approved. Report what was done afterward (step 6) rather than proposing it beforehand.
 
@@ -64,7 +68,15 @@ from there, don't redefine them here; if that file doesn't exist yet, run
    ```
    Note `sub_issue_id` wants the numeric database id, not the issue number — get it with `gh api repos/<repo>/issues/<num> --jq .id`. Label and prioritize each new subtask the same way as step 3.
 
-5. **Close with a short summary**: duplicates closed, issues refined, subtasks created, counts by priority. A chat message is enough — no need to write a report file unless asked.
+5. **Grill the user on everything you couldn't settle alone** — the
+   ambiguous issues collected in step 2, and any split whose slice boundary
+   is a real judgement call. Use the `grilling` skill if available;
+   otherwise ask the frontier as one numbered round, each question with your
+   recommended answer, and wait. Non-ambiguous relabel/reprioritize/summary
+   work from step 3 does **not** wait on this — only the flagged issues do.
+   Write each settled answer into the relevant issue body before closing out.
+
+6. **Close with a short summary**: duplicates closed, issues refined, subtasks created, counts by priority. A chat message is enough — no need to write a report file unless asked.
 
 ## Notes
 
