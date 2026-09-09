@@ -78,7 +78,11 @@ if [ "$PCT_INT" -ge "$THRESHOLD" ] 2>/dev/null; then
     CACHE_NOTE="Compacting now keeps any later cache expiry cheap instead of reprocessing the full context."
   fi
 
-  jq -n --arg pct "$PCT_INT" --arg note "$CACHE_NOTE" \
-    '{decision: "block", reason: ("Context usage is " + $pct + "% (>= 30%). " + $note + " Run /compact (or /clear) before continuing.")}'
+  # `reason` is what the CLI shows on a blocked prompt; `systemMessage` is the
+  # only field the web/mobile clients surface (the CLI shows it too). Emit both
+  # with the same text so the block is never silent — "requests just end without
+  # message" otherwise.
+  MSG="Context usage is ${PCT_INT}% (>= 30%). ${CACHE_NOTE} Run /compact (or /clear) before continuing."
+  jq -n --arg m "$MSG" '{decision: "block", reason: $m, systemMessage: $m}'
 fi
 exit 0

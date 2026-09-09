@@ -49,7 +49,12 @@ this repo — see `plugins/skill-lifecycle`.
   limits/worktree badge) plus the compact-idle hooks: a sound +
   `systemMessage` nudge to `/compact` when idle with high context usage,
   and a hard `UserPromptSubmit` block past a context threshold until you
-  do. **Caveat:** a plugin can't register the top-level `statusLine`
+  do (the block emits `systemMessage` so it's visible on web/mobile, not
+  just the CLI). A `PreCompact` + `SessionStart(compact)` hook clears the
+  cached context percentage on every compaction — manual or auto — so the
+  block and nudge don't keep firing on a pre-compaction reading that a
+  status-line-less client (web, mobile) would never refresh.
+  **Caveat:** a plugin can't register the top-level `statusLine`
   settings key for you — that still needs a one-time manual entry in your
   own `~/.claude/settings.json`:
   ```json
