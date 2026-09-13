@@ -31,6 +31,23 @@ then switch into it (`EnterWorktree({ path: "<new-worktree-path>" })` if that
 tool is available, or note the path for the session to use directly
 otherwise).
 
+**If `EnterWorktree` errors that it "cannot create a worktree from a
+subagent with a cwd override"**, the session's working directory is already
+pinned to some other worktree (e.g. subagent isolation, or a bridged/shared
+worktree the orchestrator manages). Do **not** work around this by running
+`git checkout -b <branch>` in place inside that pinned directory — a shared
+or orchestrator-managed worktree can have its branch switched back out from
+under you by a concurrent process at any point (observed in practice: a
+`git checkout -b` there was silently reverted to the worktree's original
+branch mid-session, costing several tool calls — `git reflog`, `git worktree
+list`, restoring an unrelated file some other branch had modified — just to
+notice and recover). Instead, use `git worktree add` with an **absolute**
+path outside that pinned directory (e.g. under the repo's own
+`.claude/worktrees/`, or a sibling of it) exactly as the snippet above
+shows, and use that absolute path for every subsequent tool call. Never
+reuse or branch-switch a directory this session did not create itself via
+`EnterWorktree`/`git worktree add`.
+
 **After switching, every subsequent file-editing tool call's absolute path
 must be rebased onto the new worktree directory** — don't keep reusing an
 absolute path prefix from earlier in the session (the original checkout, or
