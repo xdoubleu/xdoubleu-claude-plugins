@@ -67,3 +67,7 @@ drift from what was actually tested.
   mechanics, not issue tracking.
 - Once the work is done, hand off to `ship-pr` for the rebase/push/PR/
   auto-merge/CI-watch flow.
+- This skill never needs `gh` — branch creation and the local worktree are
+  both plain `git`. `gh`'s absence (e.g. Claude Code on the web) only
+  starts to matter once `ship-pr`/`refine-issue` need to reach the GitHub
+  API; see their own "when `gh` isn't available" sections.

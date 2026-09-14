@@ -160,6 +160,44 @@ A red PR or a non-mergeable state is not "done" — diagnose the actual failure
 report the PR URL. Auto-merge was already armed in step 2 for small
 self-contained changes; otherwise, stop here and wait for review.
 
+## When `gh` isn't available (e.g. Claude Code on the web)
+
+Check `command -v gh >/dev/null 2>&1` before step 1 rather than assuming —
+some environments (notably Claude Code on the web) have no `gh` binary but
+do have `mcp__github__*` tools mounted. Every step above still applies
+conceptually; only the mechanics change:
+
+- **Rebase and push (step 1's git parts)** are unaffected — plain `git
+  fetch`/`rebase`/`push` never needed `gh`. Only the PR-creation line
+  changes: replace `gh pr create --fill --base <default>` with whatever
+  pull-request-create tool the mounted GitHub MCP server exposes. Exact tool
+  names have churned across server releases (recent ones consolidated many
+  single-purpose PR tools into fewer general ones, e.g. a `pull_request_write`-
+  style tool with a `method`/`action` parameter) — don't hardcode a name
+  here; discover what's actually mounted this run (`ToolSearch` with a
+  query like `"select:mcp__github__*"` or a keyword search for "pull
+  request"). Pass the same fields `--fill` would have inferred: title, body
+  (including the closing keyword for the tracking issue — `Fixes #123`),
+  base branch, head branch, and explicitly a non-draft flag.
+- **Auto-merge (step 2)** — look for an auto-merge-eligible parameter on the
+  same PR write/merge tool. If the mounted server's tool set has no way to
+  arm auto-merge distinct from an immediate merge (this has genuinely
+  varied across server versions), do not fake it by merging early or by
+  silently leaving auto-merge unset — leave the PR open and non-draft, and
+  say explicitly in your report that auto-merge could not be armed and
+  needs a `gh pr merge --auto` from a session that has `gh`. Never relax the
+  auto-merge *decision* itself (the size/footprint rule from step 2) because
+  the mechanics changed — the decision is unaffected by which path enacts it.
+- **Watching CI (step 3)** — replace `gh pr checks --watch` and `gh pr view`
+  with the equivalent PR-status/checks-read tool (again, discover the actual
+  name rather than assuming one). There's no MCP subscribe/watch primitive
+  either, so poll it the same way: no faster than 20s, exit on a terminal
+  state, tolerate one flaky call rather than aborting the loop.
+
+Whichever path is used, the result must be identical: same PR body (closing
+keyword and all), non-draft either way, same auto-merge decision made per
+step 2's rule.
+
 ## Notes
 
 - Never skip hooks (`--no-verify`) or bypass signing (`--no-gpg-sign`)

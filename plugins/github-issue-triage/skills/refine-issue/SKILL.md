@@ -147,6 +147,36 @@ This is unconditional — there is no "the issue looks trivial" or "the user's
 message already spelled it out" escape hatch; a settled frontier just makes
 for a short single round.
 
+## When `gh` isn't available (e.g. Claude Code on the web)
+
+Check `command -v gh >/dev/null 2>&1` before the first `gh` call rather than
+assuming — some environments (notably Claude Code on the web) have no `gh`
+binary but do have `mcp__github__*` tools mounted. Don't guess tool names:
+exact ones have churned across GitHub MCP server releases (single-purpose
+tools have been consolidated into fewer general ones, e.g. an issue-write
+tool taking a `method`/`action` parameter for create/edit/label in one
+call) — discover what's actually mounted this run (`ToolSearch` with a
+query like `"select:mcp__github__*"` or a keyword search for "issue")
+before mapping the steps below onto it.
+
+- **Steps 1–3 (create/edit body/labels)** all map onto that issue read/write
+  tool family — same fields (`repo`, `title`, `body`, `labels`), same
+  summary-up-top-original-below-divider body format.
+- **Steps 4–5 (project board)** need the GitHub MCP server's Projects
+  toolset, which is newer and not guaranteed to be mounted even when other
+  `mcp__github__*` tools are. If a project-board tool genuinely isn't
+  available, this is a real capability gap, not a silent skip — state
+  explicitly in your report that Priority/Status could not be set and needs
+  a `gh project item-edit` from a session that has `gh`, the same way the
+  no-project-configured case is already silent-by-design but this one is
+  not.
+- **The grilling steps** have no `gh` dependency at all and apply unchanged
+  either way.
+
+Whichever path is used, the result must be identical: same body content
+(summary, `## Plan` section, original text preserved), same labels, and the
+same project-board fields whenever that tool is actually reachable.
+
 ## Steps — move to in progress
 
 When development actually starts (first code edit or commit on the branch,
