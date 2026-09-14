@@ -78,6 +78,30 @@ from there, don't redefine them here; if that file doesn't exist yet, run
 
 6. **Close with a short summary**: duplicates closed, issues refined, subtasks created, counts by priority. A chat message is enough — no need to write a report file unless asked.
 
+## When `gh` isn't available (e.g. Claude Code on the web)
+
+Same detection and general approach as `refine-issue`'s own "When `gh`
+isn't available" section — read that first, this only covers what's
+different here:
+
+- **Step 1 (list issues)** maps onto the MCP issue-read/list tool's
+  equivalent of `gh issue list --state open` — same fields
+  (`number,title,body,labels,url`).
+- **Step 3 (comment + close duplicates, rewrite/relabel everyone else)**
+  maps onto the same issue write tool `refine-issue`'s fallback describes,
+  including its `method`/`action`-style close reason.
+- **Step 4 (split into sub-issues)** is two separate operations: creating
+  the child issue (same issue-write tool, no gap) and linking it as a
+  *native* GitHub sub-issue, which used `gh api .../sub_issues` directly
+  because it's a newer relationship type without full `gh` subcommand
+  coverage either. If the mounted GitHub MCP server has no sub-issue-link
+  tool, that's a real capability gap — fall back to this skill's own
+  documented degradation (a markdown checklist / plain issue reference
+  instead of the native relationship) and say so in the closing summary,
+  don't silently drop the link.
+- **Project-board fields** in step 3 have the same gap `refine-issue`
+  documents — state explicitly when they couldn't be set.
+
 ## Notes
 
 - Don't re-triage an issue that already has the marker label — if the user wants one redone, they'll remove the label or say so explicitly.
